@@ -16,9 +16,9 @@ using namespace llvm;
 int main(int argc, const char **argv) {
 
   cl::SetVersionPrinter([](llvm::raw_ostream& os) {
-        os << "eosio-ld version " << "${VERSION_FULL}" << "\n";
+        os << "infrablockchain-ld version " << "${VERSION_FULL}" << "\n";
   });
-  cl::ParseCommandLineOptions(argc, argv, "eosio-ld (WebAssembly linker)");
+  cl::ParseCommandLineOptions(argc, argv, "infrablockchain-ld (WebAssembly linker)");
   Options opts = CreateOptions();
 
   std::string line;
@@ -42,13 +42,13 @@ int main(int argc, const char **argv) {
 
   // finally any post processing
   if (!fno_post_pass_opt && !opts.native) {
-     if ( !llvm::sys::fs::exists( opts.eosio_pp_dir+"/eosio-pp" ) ) {
-        std::cerr << "Error: eosio.pp not found! (Try reinstalling eosio.cdt)" << std::endl;
+     if ( !llvm::sys::fs::exists( opts.eosio_pp_dir+"/infrablockchain-pp" ) ) {
+        std::cerr << "Error: infrablockchain-pp not found! (Try reinstalling infrablockchain.cdt)" << std::endl;
         return -1;
      }
 
-     if (!eosio::cdt::environment::exec_subprogram("eosio-pp", {opts.output_fn})) {
-        std::cerr << "eosio-pp failed" << std::endl;
+     if (!eosio::cdt::environment::exec_subprogram("infrablockchain-pp", {opts.output_fn})) {
+        std::cerr << "infrablockchain-pp failed" << std::endl;
         return -1;
      }
 

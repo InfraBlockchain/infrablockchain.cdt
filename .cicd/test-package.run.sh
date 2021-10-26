@@ -22,4 +22,4 @@ else
     exit 3
 fi
 
-eosio-cpp --version
+infrablockchain-cpp --version

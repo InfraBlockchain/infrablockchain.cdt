@@ -69,11 +69,11 @@ steps:
 
   - label: ":darwin: macOS 10.14 - Build"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && ./.cicd/build.sh"
-      - "cd eosio.cdt && tar -pczf build.tar.gz build && buildkite-agent artifact upload build.tar.gz"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && ./.cicd/build.sh"
+      - "cd infrablockchain.cdt && tar -pczf build.tar.gz build && buildkite-agent artifact upload build.tar.gz"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -98,7 +98,7 @@ steps:
       PROJECT_TAG: ${MACOS_10_14_TAG}
       REPO: ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO}
       REPO_COMMIT: $BUILDKITE_COMMIT
-      TAG_COMMANDS: "git clone ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO} eosio.cdt && cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive && . ./.cicd/platforms/macos-10.14.sh && cd ~/eosio.cdt && cd .. && rm -rf eosio.cdt"
+      TAG_COMMANDS: "git clone ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO} infrablockchain.cdt && cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive && . ./.cicd/platforms/macos-10.14.sh && cd ~/infrablockchain.cdt && cd .. && rm -rf infrablockchain.cdt"
       TEMPLATE: 10.14.6_6C_14G_80G
       TEMPLATE_TAG: clean::cicd::git-ssh::nas::brew::buildkite-agent
     timeout: ${TIMEOUT:-120}
@@ -108,11 +108,11 @@ steps:
 
   - label: ":darwin: macOS 10.15 - Build"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && ./.cicd/build.sh"
-      - "cd eosio.cdt && tar -pczf build.tar.gz build && buildkite-agent artifact upload build.tar.gz"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && ./.cicd/build.sh"
+      - "cd infrablockchain.cdt && tar -pczf build.tar.gz build && buildkite-agent artifact upload build.tar.gz"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -137,7 +137,7 @@ steps:
       PROJECT_TAG: ${MACOS_10_15_TAG}
       REPO: ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO}
       REPO_COMMIT: $BUILDKITE_COMMIT
-      TAG_COMMANDS: "git clone ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO} eosio.cdt && cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive && . ./.cicd/platforms/macos-10.15.sh && cd ~/eosio.cdt && cd .. && rm -rf eosio.cdt"
+      TAG_COMMANDS: "git clone ${BUILDKITE_PULL_REQUEST_REPO:-$BUILDKITE_REPO} infrablockchain.cdt && cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive && . ./.cicd/platforms/macos-10.15.sh && cd ~/infrablockchain.cdt && cd .. && rm -rf infrablockchain.cdt"
       TEMPLATE: 10.15.5_6C_14G_80G
       TEMPLATE_TAG: clean::cicd::git-ssh::nas::brew::buildkite-agent
     timeout: ${TIMEOUT:-120}
@@ -215,11 +215,11 @@ steps:
 
   - label: ":darwin: macOS 10.14 - Unit Tests"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/tests.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/tests.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -242,11 +242,11 @@ steps:
 
   - label: ":darwin: macOS 10.15 - Unit Tests"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/tests.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/tests.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -335,11 +335,11 @@ steps:
 
   - label: ":darwin: macOS 10.14 - Toolchain Tests"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/toolchain-tests.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/toolchain-tests.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -362,11 +362,11 @@ steps:
 
   - label: ":darwin: macOS 10.15 - Toolchain Tests"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/toolchain-tests.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/toolchain-tests.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -584,11 +584,11 @@ steps:
 
   - label: ":darwin: Mojave - Package Builder"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/package.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.14 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/package.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -612,11 +612,11 @@ steps:
 
   - label: ":darwin: Catalina - Package Builder"
     command:
-      - "git clone $BUILDKITE_REPO eosio.cdt"
-      - "cd eosio.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
-      - "cd eosio.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
-      - "cd eosio.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
-      - "cd eosio.cdt && ./.cicd/package.sh"
+      - "git clone $BUILDKITE_REPO infrablockchain.cdt"
+      - "cd infrablockchain.cdt && if [[ $BUILDKITE_BRANCH =~ ^pull/[0-9]+/head: ]]; then git fetch -v --prune origin refs/pull/$(echo $BUILDKITE_BRANCH | cut -d/ -f2)/head; fi"
+      - "cd infrablockchain.cdt && git checkout -f $BUILDKITE_COMMIT && git submodule update --init --recursive"
+      - "cd infrablockchain.cdt && buildkite-agent artifact download build.tar.gz . --step ':darwin: macOS 10.15 - Build' && tar -xzf build.tar.gz"
+      - "cd infrablockchain.cdt && ./.cicd/package.sh"
     plugins:
       - EOSIO/anka#v0.6.1:
           no-volume: true
@@ -648,12 +648,12 @@ steps:
 
   - label: ":beer: Brew Updater"
     command: |
-      buildkite-agent artifact download eosio.cdt.rb . --step ':darwin: Mojave - Package Builder'
-      mv eosio.cdt.rb eosio_cdt_mojave.rb
-      buildkite-agent artifact upload eosio_cdt_mojave.rb
-      buildkite-agent artifact download eosio.cdt.rb . --step ':darwin: Catalina - Package Builder'
-      mv eosio.cdt.rb eosio_cdt_catalina.rb
-      buildkite-agent artifact upload eosio_cdt_catalina.rb
+      buildkite-agent artifact download infrablockchain.cdt.rb . --step ':darwin: Mojave - Package Builder'
+      mv infrablockchain.cdt.rb infrablockchain_cdt_mojave.rb
+      buildkite-agent artifact upload infrablockchain_cdt_mojave.rb
+      buildkite-agent artifact download infrablockchain.cdt.rb . --step ':darwin: Catalina - Package Builder'
+      mv infrablockchain.cdt.rb infrablockchain_cdt_catalina.rb
+      buildkite-agent artifact upload infrablockchain_cdt_catalina.rb
     agents:
       queue: "automation-basic-builder-fleet"
     timeout: "${TIMEOUT:-5}"

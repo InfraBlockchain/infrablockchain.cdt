@@ -21,7 +21,7 @@ if [[ -f $BUILDKITE_ENV_FILE ]]; then
 fi
 
 if [[ "$BUILDKITE" == 'true' && "$IMAGE_TAG" == 'ubuntu-18.04' ]]; then
-  FULL_TAG='eosio/ci-contracts-builder:base-ubuntu-18.04-develop'
+  FULL_TAG='infrablockchain/ci-contracts-builder:base-ubuntu-18.04-develop'
 fi
 
 set +e

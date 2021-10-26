@@ -11,7 +11,7 @@ This process created the file `CMakeCache.txt' and the directory `CMakeFiles'.
 Please delete them.")
 endif()
 
-project(eosio_cdt)
+project(infrablockchain_cdt)
 
 find_program(SCCACHE_FOUND sccache)
 if (SCCACHE_FOUND)
@@ -25,10 +25,10 @@ else()
    endif()
 endif()
 
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 8)
-set(VERSION_PATCH 1)
-#set(VERSION_SUFFIX rc2)
+set(VERSION_MAJOR 2)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+set(VERSION_SUFFIX rc1)
 
 if (VERSION_SUFFIX)
    set(VERSION_FULL "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${VERSION_SUFFIX}")
@@ -36,9 +36,9 @@ else()
    set(VERSION_FULL "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 endif()
 
-set(CDT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/eosio.cdt)
+set(CDT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/infrablockchain.cdt)
 
-option(ENABLE_NATIVE_COMPILER "enable native builds with the eosio.cdt toolchain" ON)
+option(ENABLE_NATIVE_COMPILER "enable native builds with the infrablockchain.cdt toolchain" ON)
 option(ENABLE_TESTS "enable building tests" ON)
 
 include(GNUInstallDirs)
@@ -51,28 +51,35 @@ if(NOT LIBS_BUILD_TYPE)
    set(LIBS_BUILD_TYPE "Release")
 endif()
 
+if ($ENV{CLION_IDE})
+   set(BOOST_ROOT "/usr/local/opt/boost")
+   #    include_directories(
+   #            /usr/local/opt/boost/include
+   #    )
+endif ()
+
 include(modules/ClangExternalProject.txt)
 include(modules/ToolsExternalProject.txt)
 
 set(WASM_SDK_BUILD true)
 
-### Configure the EosioWasmToolchain.cmakes
+### Configure the InfraBlockchainWasmToolchain.cmakes
 set(CDT_ROOT_DIR ${CMAKE_BINARY_DIR})
 
-configure_file(${CMAKE_SOURCE_DIR}/modules/eosio.cdt-config.cmake ${CMAKE_BINARY_DIR}/lib/cmake/eosio.cdt/eosio.cdt-config.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio.cdt/EosioCDTMacros.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio.cdt/EosioWasmToolchain.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/infrablockchain.cdt-config.cmake ${CMAKE_BINARY_DIR}/lib/cmake/infrablockchain.cdt/infrablockchain.cdt-config.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/infrablockchain.cdt/InfraBlockchainCDTMacros.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/infrablockchain.cdt/InfraBlockchainWasmToolchain.cmake @ONLY)
 
 set(CDT_ROOT_DIR ${CDT_INSTALL_PREFIX})
 
-configure_file(${CMAKE_SOURCE_DIR}/modules/eosio.cdt-config.cmake ${CMAKE_BINARY_DIR}/modules/eosio.cdt-config.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioCDTMacros.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioWasmToolchain.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/infrablockchain.cdt-config.cmake ${CMAKE_BINARY_DIR}/modules/infrablockchain.cdt-config.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/InfraBlockchainCDTMacros.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/modules/InfraBlockchainWasmToolchain.cmake @ONLY)
 
 set(CDT_ROOT_DIR "_PREFIX_")
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioCDTMacrosPackage.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/EosioWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioWasmToolchainPackage.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/modules/eosio.cdt-config.cmake ${CMAKE_BINARY_DIR}/modules/eosio.cdt-config.cmake.package @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainCDTMacros.cmake.in ${CMAKE_BINARY_DIR}/modules/InfraBlockchainCDTMacrosPackage.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/InfraBlockchainWasmToolchain.cmake.in ${CMAKE_BINARY_DIR}/modules/InfraBlockchainWasmToolchain.cmake @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/modules/infrablockchain.cdt-config.cmake ${CMAKE_BINARY_DIR}/modules/infrablockchain.cdt-config.cmake.package @ONLY)
 
 include(modules/LibrariesExternalProject.txt)
 
@@ -85,11 +92,11 @@ configure_file(${CMAKE_SOURCE_DIR}/scripts/ricardeos/ricardeos.py ${CMAKE_BINARY
 install(FILES ${CMAKE_BINARY_DIR}/scripts/ricardeos.py DESTINATION ${CDT_INSTALL_PREFIX}/scripts)
 
 # section for package construction
-set(VENDOR "block.one")
-set(PROJECT_NAME "eosio.cdt")
-set(DESC "Toolchain and supporting tools for the EOS.IO platform")
-set(URL "https://github.com/eosio/eosio.cdt")
-set(EMAIL "support@block.one")
+set(VENDOR "blockchainlabs")
+set(PROJECT_NAME "infrablockchain.cdt")
+set(DESC "Toolchain and supporting tools for the InfraBlockchain platform")
+set(URL "https://github.com/InfraBlockchain/infrablockchain.cdt")
+set(EMAIL "contact@infrablockchain.com")
 configure_file(${CMAKE_SOURCE_DIR}/scripts/generate_package.sh.in ${CMAKE_BINARY_DIR}/packages/generate_package.sh @ONLY)
 configure_file(${CMAKE_SOURCE_DIR}/scripts/generate_deb.sh ${CMAKE_BINARY_DIR}/packages/generate_deb.sh COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/scripts/generate_bottle.sh ${CMAKE_BINARY_DIR}/packages/generate_bottle.sh COPYONLY)
@@ -102,10 +109,10 @@ configure_file(${CMAKE_SOURCE_DIR}/libraries/boost/boost.license ${CMAKE_BINARY_
 configure_file(${CMAKE_SOURCE_DIR}/libraries/meta_refl/LICENSE ${CMAKE_BINARY_DIR}/licenses/meta_refl.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/tools/external/wabt/LICENSE ${CMAKE_BINARY_DIR}/licenses/wabt.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/tools/jsoncons/LICENSE ${CMAKE_BINARY_DIR}/licenses/jsoncons.license COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_BINARY_DIR}/licenses/eosio.cdt.license COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_BINARY_DIR}/licenses/infrablockchain.cdt.license COPYONLY)
 
-include(modules/TestsExternalProject.txt)
-
-include(CTest)
-enable_testing()
-add_subdirectory(tests)
+#include(modules/TestsExternalProject.txt)
+#
+#include(CTest)
+#enable_testing()
+#add_subdirectory(tests)

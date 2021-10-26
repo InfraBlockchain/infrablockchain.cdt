@@ -30,7 +30,7 @@ else # Linux
         # Generate Base Images
         $CICD_DIR/generate-base-images.sh
         if [[ "$IMAGE_TAG" == 'ubuntu-18.04' ]]; then
-          FULL_TAG='eosio/ci-contracts-builder:base-ubuntu-18.04-develop'
+          FULL_TAG='infrablockchain/ci-contracts-builder:base-ubuntu-18.04-develop'
         fi
     fi
 

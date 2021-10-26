@@ -9,7 +9,7 @@ SANITIZED_TAG="$(sanitize "$BUILDKITE_TAG")"
 [[ -z "$SANITIZED_TAG" ]] || echo "Branch '$BUILDKITE_TAG' sanitized as '$SANITIZED_TAG'."
 # docker build
 echo '+++ :docker: Build Docker Container'
-DOCKERHUB_REGISTRY="docker.io/eosio/eosio.cdt"
+DOCKERHUB_REGISTRY="docker.io/infrablockchain/infrablockchain.cdt"
 IMAGE="${DOCKERHUB_REGISTRY}:${BUILDKITE_COMMIT:-latest}"
 DOCKER_BUILD="docker build -t '$IMAGE' -f ./docker/dockerfile ."
 echo "$ $DOCKER_BUILD"
