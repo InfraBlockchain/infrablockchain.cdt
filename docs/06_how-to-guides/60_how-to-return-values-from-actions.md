@@ -12,7 +12,7 @@ In order to accomplish this, use the `return` statement and pass the desired ret
 
 Make sure you have the following prerequisites in place:
 
-* An EOSIO development environment, for details consult the [Get Started Guide](https://developers.eos.io/welcome/latest/getting-started-guide/index).
+* An InfraBlockchain development environment, for details consult the [Get Started Guide](https://developers.infrablockchain.com/welcome/latest/getting-started-guide/index).
 * A smart contract, let’s call it `smrtcontract`, which builds without error.
 * An action, let’s call it `checkwithrv`, from which you want to return a value of a user defined type `action_response`.
 
@@ -64,7 +64,7 @@ action_response smrtcontract::checkwithrv( name nm ) {
 }
 ```
 
-For a complete example of a smart contract that implements an action which returns a value see the [hello example smart contract](https://github.com/EOSIO/eosio.cdt/blob/develop/examples/hello/src/hello.cpp#L16).
+For a complete example of a smart contract that implements an action which returns a value see the [hello example smart contract](https://github.com/InfraBlockchain/infrablockchain.cdt/blob/develop/examples/hello/src/hello.cpp#L16).
 
 ## Next Steps
 

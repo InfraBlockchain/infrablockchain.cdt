@@ -27,5 +27,5 @@ The following list provides important details for when you return a value from a
 
 For a full working example of a smart contract action which returns a value, refer to the following resources:
 
-* The [`hello`](https://github.com/EOSIO/eosio.cdt/blob/develop/examples/hello/src/hello.cpp#L14) smart contract example, see action `hello::checkwithrv`.
+* The [`hello`](https://github.com/InfraBlockchain/infrablockchain.cdt/blob/develop/examples/hello/src/hello.cpp#L14) smart contract example, see action `hello::checkwithrv`.
 * The [How-to return values from actions](../06_how-to-guides/60_how-to-return-values-from-actions.md).

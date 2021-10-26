@@ -16,13 +16,13 @@ Blockchain application developers can use the *Resource Payer* on any EOSIO-base
 
 ### Related Concepts
 
-A [transaction](https://developers.eos.io/welcome/latest/glossary/index/#transaction) consists of one or more actions executed atomically on the blockchain which alter the state of the blockchain.
+A [transaction](https://developers.infrablockchain.com/welcome/latest/glossary/index/#transaction) consists of one or more actions executed atomically on the blockchain which alter the state of the blockchain.
 
-You need system resources, [CPU](https://developers.eos.io/welcome/latest/glossary/index/#cpu) and [NET](https://developers.eos.io/welcome/latest/glossary/index/#net), to be able to execute transactions.
+You need system resources, [CPU](https://developers.infrablockchain.com/welcome/latest/glossary/index/#cpu) and [NET](https://developers.infrablockchain.com/welcome/latest/glossary/index/#net), to be able to execute transactions.
 
-The *Resource Payer* feature allows the application developers to designate the payer of the CPU and NET resources cost to a random blockchain [account](https://developers.eos.io/welcome/latest/glossary/index/#account).
+The *Resource Payer* feature allows the application developers to designate the payer of the CPU and NET resources cost to a random blockchain [account](https://developers.infrablockchain.com/welcome/latest/glossary/index/#account).
 
-The *Resource Payer* feature is not available by default. To enable the feature, the `RESOURCE_PAYER` upgrade protocol feature must be enabled. For more information about upgrading protocol features, read the [Consensus Protocol Upgrade Process](https://developers.eos.io/manuals/eos/latest/nodeos/upgrade-guides/1.8-upgrade-guide/#upgrade-process-for-all-eosio-networks-including-test-networks) documentation.
+The *Resource Payer* feature is not available by default. To enable the feature, the `RESOURCE_PAYER` upgrade protocol feature must be enabled. For more information about upgrading protocol features, read the [Consensus Protocol Upgrade Process](https://developers.infrablockchain.com/manuals/eos/latest/nodeos/upgrade-guides/1.8-upgrade-guide/#upgrade-process-for-all-eosio-networks-including-test-networks) documentation.
 
 When you send the transaction to the blockchain, if you want to designate the resource payer, you must specify in the transaction definition the payer information which consists of the following:
 
@@ -38,7 +38,7 @@ Find below one example that illustrate how to send transaction to the blockchain
 
 ### EOSJS
 
-To send a transaction to the blockchain using javascript via the `eosjs` library, follow the [How To Send A Transaction](https://developers.eos.io/manuals/eos/latest/cleos/how-to-guides/how-to-submit-a-transaction) steps and note in the json example the resource payer information set in the ``transaction_extensions`` field.
+To send a transaction to the blockchain using javascript via the `eosjs` library, follow the [How To Send A Transaction](https://developers.infrablockchain.com/manuals/eos/latest/cleos/how-to-guides/how-to-submit-a-transaction) steps and note in the json example the resource payer information set in the ``transaction_extensions`` field.
 
 ### Cleos
 

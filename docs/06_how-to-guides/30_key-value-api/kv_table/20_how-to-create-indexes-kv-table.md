@@ -21,7 +21,7 @@ The  `KV_NAMED_INDEX` macro and the `eosio::kv::table::index` template class are
 
 Make sure you have the following prerequisites in place:
 
-* An EOSIO development environment, for details consult the [Get Started Guide](https://developers.eos.io/welcome/latest/getting-started-guide/index)
+* An InfraBlockchain development environment, for details consult the [Get Started Guide](https://developers.infrablockchain.com/welcome/latest/getting-started-guide/index)
 * A smart contract named `smrtcontract`
 * A user defined data type, `struct` or `class`, which defines the data stored in the table, named `person`
 * A `kv table` data type, `struct` or `class`, which inherits `eosio::kv::table`, and stores objects of type `person`, named `address_table`
@@ -57,7 +57,7 @@ class [[eosio::contract]] smrtcontract : public contract {
 ### Define a unique index on the data member account_name using the macro KV_NAMED_INDEX
 
 1. Use the `KV_NAMED_INDEX` macro with two parameters.
-2. The first parameter is the name of the index and must be a qualified `eosio::name`. See documentation for the [eosio name restrictions](https://developers.eos.io/welcome/latest/glossary/index#account-name).
+2. The first parameter is the name of the index and must be a qualified `eosio::name`. See documentation for the [eosio name restrictions](https://developers.infrablockchain.com/welcome/latest/glossary/index#account-name).
 3. The second parameter is the name of the data member the index is defined for.
 4. Define the constructor of the `address_table` structure. It must have as input parameter the name of the contract, `contract_name`, which owns this table.
 5. In the constructor of `address_table` structure call the base class `kv::table::init(...)` method. Pass the `contract_name` as the first parameter and the `account_name` as the second parameter. The `account_name` is the data member for which the index was defined for using the `KV_NAMED_INDEX` macro.
@@ -84,7 +84,7 @@ class [[eosio::contract]] smrtcontract : public contract {
 ### Define a unique index on the data member personal_id using the eosio::kv::table::index template class
 
 1. Use the `eosio::kv::table::index` template class with two parameters.
-2. The first parameter is the name of the index and must be a qualified `eosio:name`. See documentation for the [eosio name restrictions](https://developers.eos.io/welcome/latest/glossary/index#account-name).
+2. The first parameter is the name of the index and must be a qualified `eosio:name`. See documentation for the [eosio name restrictions](https://developers.infrablockchain.com/welcome/latest/glossary/index#account-name).
 3. The second parameter is the name of the data member the index is defined for.
 4. Define the constructor of the `address_table` structure. It must have as input parameter the name of the contract, `contract_name`, which owns this table.
 5. In the constructor of `address_table` structure call the base class `kv::table::init(...)` method. Pass the `contract_name` as the first parameter and the `personal_id_idx` as the second parameter. The `personal_id_idx` is the index defined previously.
@@ -113,7 +113,7 @@ class [[eosio::contract]] smrtcontract : public contract {
 ### Define a non-unique index on the data member first_name using the macro KV_NAMED_INDEX
 
 1. Use the `KV_NAMED_INDEX` with two parameters.
-2. The first parameter is the name of the index and must be a qualified `eosio::name`. See documentation for the [eosio name restrictions](https://developers.eos.io/welcome/latest/glossary/index#account-name).
+2. The first parameter is the name of the index and must be a qualified `eosio::name`. See documentation for the [eosio name restrictions](https://developers.infrablockchain.com/welcome/latest/glossary/index#account-name).
 3. The second parameter is the name of the data member the index is defined for. The type of this data member must be `std::tuple<>`. The first parameter of the tuple must be the type of the data member indexed non-uniquely, in our case the type `std::string` is used because `first_name` is the data member indexed non-uniquely. The last parameter of the tuple type must be the type of a data member name which is unique. In our case the type `eosio::name` is used because data member `account_name` is unique. Multiple properties can be indexed non-uniquely as well. In this case the first parameter types correspond to the multiple properties being indexed. As previously already mentioned, the last parameter correspond to the type of a data member name which is unique.
 4. Define the constructor of the `address_table` structure. It must have as input parameter the name of the contract, `contract_name`, which owns this table.
 5. In the constructor of `address_table` structure call the base class `kv::table::init(...)` method. Pass the `contract_name` as the first parameter and the `first_name` as the second parameter. The `first_name` is the data member for which the index was defined for using the `KV_NAMED_INDEX` macro.
@@ -147,7 +147,7 @@ class [[eosio::contract]] smrtcontract : public contract {
 ### Define a non-unique index on the data member last_name using the eosio::kv::table::index template class
 
 1. Use the `eosio::kv::table::index` template class with two parameters.
-2. The first parameter is the name of the index and must be a qualified `eosio:name`, see documentation for the [eosio name restrictions](https://developers.eos.io/welcome/latest/glossary/index#account-name).
+2. The first parameter is the name of the index and must be a qualified `eosio:name`, see documentation for the [eosio name restrictions](https://developers.infrablockchain.com/welcome/latest/glossary/index#account-name).
 3. The second parameter is the name of the data member the index is defined for. The data member used for the second parameter must be of template type `std::tuple`. The first parameter of the tuple must be the type of the data member indexed non-uniquely. In our case the type `std::string` is used because `first_name` is the data member indexed non-uniquely. The last parameter of the tuple must be the type of a data member name which is unique. In our case the type `eosio::name` is used because data member `account_name` is unique. Multiple properties can be indexed non-uniquely as well. In this case the first parameter types correspond to the multiple properties being indexed. As previously already mentioned, the last parameter correspond to the type of a data member name which is unique.
 4. Define the constructor of the `address_table` structure. It must have as input parameter the name of the contract, `contract_name`, which owns this table.
 5. In the constructor of `address_table` structure call the base class `kv::table::init(...)` method. Pass the `contract_name` as the first parameter and the `last_name_idx` as the second parameter. The `last_name_idx` is the index defined previously.

@@ -16,7 +16,7 @@ See the following code reference:
 
 Make sure you have the following prerequisites in place:
 
-* An EOSIO development environment, for details consult the [Get Started Guide](https://developers.eos.io/welcome/latest/getting-started-guide/index),
+* An InfraBlockchain development environment, for details consult the [Get Started Guide](https://developers.infrablockchain.com/welcome/latest/getting-started-guide/index),
 
 ## Procedure
 
@@ -146,7 +146,7 @@ __singleton_example.cpp__
 ```
 
 [[info | Full example location]]
-| A full example project demonstrating the instantiation and usage of singleton can be found [here](https://github.com/EOSIO/eosio.cdt/tree/master/examples/singleton_example).
+| A full example project demonstrating the instantiation and usage of singleton can be found [here](https://github.com/InfraBlockchain/infrablockchain.cdt/tree/master/examples/singleton_example).
 
 ## Summary
 

@@ -17,7 +17,7 @@ See the following code reference:
 
 Make sure you have the following prerequisites in place:
 
-* An EOSIO development environment, for details consult the [Get Started Guide](https://developers.eos.io/welcome/latest/getting-started-guide/index),
+* An InfraBlockchain development environment, for details consult the [Get Started Guide](https://developers.infrablockchain.com/welcome/latest/getting-started-guide/index),
 * A multi-index `testab` table instance which stores `user` objects indexed by the primary key which is of type `eosio::name`. Consult the section [How to instantiate a multi-index table](./how-to-instantiate-a-multi-index-table) to learn how to set it up.
 
 ## Procedure
@@ -80,7 +80,7 @@ If the `user` object you want to update is found, the [`eosio::check`](../../nam
 Now you have implemented a new action `mod`. Call `mod` to update the `datum` data member for the user object identified by the `user` name parameter.
 
 [[info | Full example location]]
-| A full example project demonstrating the instantiation and usage of multi-index table can be found [here](https://github.com/EOSIO/eosio.cdt/tree/master/examples/multi_index_example).
+| A full example project demonstrating the instantiation and usage of multi-index table can be found [here](https://github.com/InfraBlockchain/infrablockchain.cdt/tree/master/examples/multi_index_example).
 
 ## Summary
 

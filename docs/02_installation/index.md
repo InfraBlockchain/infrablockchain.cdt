@@ -2,54 +2,54 @@
 content_title: Binary Releases
 ---
 
-EOSIO.CDT currently supports Mac OS X brew, Linux x86_64 Debian packages, and Linux x86_64 RPM packages.
+InfraBlockchain.CDT currently supports Mac OS X brew, Linux x86_64 Debian packages, and Linux x86_64 RPM packages.
 
-**If you have previously installed EOSIO.CDT, run the `uninstall` script (it is in the directory where you cloned EOSIO.CDT) before downloading and using the binary releases.**
+**If you have previously installed InfraBlockchain.CDT, run the `uninstall` script (it is in the directory where you cloned InfraBlockchain.CDT) before downloading and using the binary releases.**
 
 ## Mac OS X Brew Install
 
 ```sh
-brew tap eosio/eosio.cdt
-brew install eosio.cdt
+brew tap infrablockchain/infrablockchain.cdt
+brew install infrablockchain.cdt
 ```
 
 ## Mac OS X Brew Uninstall
 
 ```sh
-brew remove eosio.cdt
+brew remove infrablockchain.cdt
 ```
 
 ## Debian Package Install
 
 ```sh
-wget https://github.com/EOSIO/eosio.cdt/releases/download/v1.8.1/eosio.cdt_1.8.1-ubuntu-18.04_amd64.deb
-sudo apt install ./eosio.cdt_1.8.1-ubuntu-18.04_amd64.deb
+wget https://github.com/InfraBlockchain/infrablockchain.cdt/releases/download/v2.0.0/infrablockchain.cdt_2.0.0-ubuntu-18.04_amd64.deb
+sudo apt install ./infrablockchain.cdt_2.0.0-ubuntu-18.04_amd64.deb
 ```
 
 ## Debian Package Uninstall
 
 ```sh
-sudo apt remove eosio.cdt
+sudo apt remove infrablockchain.cdt
 ```
 
 ## RPM Package Install
 
 ```sh
-wget https://github.com/EOSIO/eosio.cdt/releases/download/v1.8.1/eosio.cdt-1.8.1.el7.x86_64.rpm
-sudo yum install ./eosio.cdt-1.8.1.el7.x86_64.rpm
+wget https://github.com/InfraBlockchain/infrablockchain.cdt/releases/download/v2.0.0/infrablockchain.cdt-1.8.1.el7.x86_64.rpm
+sudo yum install ./infrablockchain.cdt-2.0.0.el7.x86_64.rpm
 ```
 
 ## RPM Package Uninstall
 
 ```sh
-sudo yum remove eosio.cdt
+sudo yum remove infrablockchain.cdt
 ```
 
 # Guided Installation or Building from Scratch
 
 ```sh
-git clone --recursive https://github.com/eosio/eosio.cdt
-cd eosio.cdt
+git clone --recursive https://github.com/InfraBlockchain/infrablockchain.cdt
+cd infrablockchain.cdt
 mkdir build
 cd build
 cmake ..
@@ -66,32 +66,32 @@ sudo make install
 ## Uninstall after manual installation
 
 ```sh
-sudo rm -fr /usr/local/eosio.cdt
-sudo rm -fr /usr/local/lib/cmake/eosio.cdt
-sudo rm /usr/local/bin/eosio-*
+sudo rm -fr /usr/local/infrablockchain.cdt
+sudo rm -fr /usr/local/lib/cmake/infrablockchain.cdt
+sudo rm /usr/local/bin/infrablockchain-*
 ```
 
 # Installed Tools
 
-* eosio-cpp
-* eosio-cc
-* eosio-ld
-* eosio-init
-* eosio-abidiff
-* eosio-wasm2wast
-* eosio-wast2wasm
-* eosio-ranlib
-* eosio-ar
-* eosio-objdump
-* eosio-readelf
+* infrablockchain-cpp
+* infrablockchain-cc
+* infrablockchain-ld
+* infrablockchain-init
+* infrablockchain-abidiff
+* infrablockchain-wasm2wast
+* infrablockchain-wast2wasm
+* infrablockchain-ranlib
+* infrablockchain-ar
+* infrablockchain-objdump
+* infrablockchain-readelf
 
 The following tools are not installed after brew install, you get them when you build the repository and install it from scratch, [see here](#guided-installation-or-building-from-scratch):
 
-* eosio-abidiff
-* eosio-ranlib
-* eosio-ar
-* eosio-objdump
-* eosio-readelf
+* infrablockchain-abidiff
+* infrablockchain-ranlib
+* infrablockchain-ar
+* infrablockchain-objdump
+* infrablockchain-readelf
 
 License
 [MIT](../LICENSE)

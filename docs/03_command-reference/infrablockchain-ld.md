@@ -1,12 +1,12 @@
 ---
-content_title: eosio-ld tool
+content_title: infrablockchain-ld tool
 ---
 
-The eosio-ld tool is a the custom web assembly linker for EOSIO platform smart contracts.
+The infrablockchain-ld tool is a the custom web assembly linker for InfraBlockchain platform smart contracts.
 
 
 ```
-USAGE: eosio-ld [options] <input file> ...
+USAGE: infrablockchain-ld [options] <input file> ...
 
 OPTIONS:
 

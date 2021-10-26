@@ -11,7 +11,7 @@ This how-to provides instructions to upsert into `Key-Value Map` (`kv map`). Ups
 
 Make sure you have the following prerequisites in place:
 
-* An EOSIO development environment, for details consult the [Get Started Guide](https://developers.eos.io/welcome/latest/getting-started-guide/index)
+* An InfraBlockchain development environment, for details consult the [Get Started Guide](https://developers.infrablockchain.com/welcome/latest/getting-started-guide/index)
 * A smart contract named `smrtcontract`
 * A user defined type, `struct` or `class`, which defines the data stored in the map, named `person`
 * A `kv map` object, name `my_map`, which stores objects of type `person`, with unique keys of type `int`

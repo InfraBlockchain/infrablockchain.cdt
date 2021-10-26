@@ -2,7 +2,7 @@
 content_title: Naming conventions
 ---
 
-When implementing EOSIO smart contracts and when storing data in an EOSIO blockchain, it is important to follow the established EOSIO conventions for naming accounts, actions, tables, etc.
+When implementing InfraBlockchain smart contracts and when storing data in an InfraBlockchain blockchain, it is important to follow the established InfraBlockchain conventions for naming accounts, actions, tables, etc.
 
 ## EOSIO names
 
