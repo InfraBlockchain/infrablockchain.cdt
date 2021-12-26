@@ -933,4 +933,15 @@ extern "C" {
       return intrinsics::get().call<intrinsics::redeem_token>(amount);
    }
 
+   uint32_t get_system_token_count() {
+      return intrinsics::get().call<intrinsics::get_system_token_count>();
+   }
+
+   uint32_t get_system_token_list_packed( char* data, uint32_t datalen ) {
+      return intrinsics::get().call<intrinsics::get_system_token_list_packed>(data, datalen);
+   }
+
+   int64_t set_system_token_list_packed( const char* data, uint32_t datalen ) {
+      return intrinsics::get().call<intrinsics::set_system_token_list_packed>(data, datalen);
+   }
 }

@@ -722,7 +722,8 @@ struct generation_utils {
          "send_context_free_inline",
          "issue_token",
          "transfer_token",
-         "redeem_token"
+         "redeem_token",
+         "set_system_token_list_packed"
       };
 
       return write_host_funcs.count(func_decl->getNameInfo().getAsString()) >= 1;

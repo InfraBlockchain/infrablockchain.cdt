@@ -1,7 +1,9 @@
+#include "core/eosio/check.hpp"
 #include "core/eosio/datastream.hpp"
 #include "core/eosio/powers.hpp"
 #include "contracts/eosio/system.hpp"
 #include "contracts/eosio/privileged.hpp"
+#include "contracts/infrablockchain/system_token.hpp"
 
 #include <algorithm>
 
@@ -158,3 +160,40 @@ namespace eosio {
    }
 
 } // namespace eosio
+
+namespace infrablockchain {
+
+   extern "C" {
+      __attribute__((eosio_wasm_import))
+      uint32_t get_system_token_list_packed( char* data, uint32_t datalen );
+      __attribute__((eosio_wasm_import))
+      int64_t set_system_token_list_packed( const char* data, uint32_t datalen );
+   }
+
+   // system_token.hpp
+   void get_system_token_list( std::vector<infrablockchain::system_token>& system_tokens ) {
+      system_tokens.clear();
+      uint32_t sys_token_list_packed_size = get_system_token_list_packed( nullptr, 0 );
+      if ( sys_token_list_packed_size > 0 ) {
+         /// allocate buffer memory through memory manager
+         char* buf_sys_token_list_data_packed = static_cast<char*>(malloc(sys_token_list_packed_size));
+         eosio::check( buf_sys_token_list_data_packed != nullptr, "malloc failed for get_system_token_list_packed" );
+         get_system_token_list_packed( buf_sys_token_list_data_packed, sys_token_list_packed_size );
+
+         eosio::datastream<const char*> ds( buf_sys_token_list_data_packed, sys_token_list_packed_size );
+         ds >> system_tokens;
+
+         free(buf_sys_token_list_data_packed);
+      }
+   }
+
+   // system_token.hpp
+   std::optional<uint64_t> set_system_token_list( const std::vector<infrablockchain::system_token>& system_tokens ) {
+      auto packed_system_tokens = eosio::pack( system_tokens );
+      int64_t ret = set_system_token_list_packed( (char*)packed_system_tokens.data(), packed_system_tokens.size() );
+      if (ret >= 0)
+         return static_cast<uint64_t>(ret);
+      return {};
+   }
+
+} // namespace infrablockchain
