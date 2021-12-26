@@ -909,4 +909,28 @@ extern "C" {
       return intrinsics::get().call<intrinsics::get_active_security_group>(data, datalen);
    }
 
+   uint64_t get_token_symbol(capi_name token_id){
+      return intrinsics::get().call<intrinsics::get_token_symbol>(token_id);
+   }
+
+   int64_t get_token_total_supply(capi_name token_id){
+      return intrinsics::get().call<intrinsics::get_token_total_supply>(token_id);
+   }
+
+   int64_t get_token_balance(capi_name token_id, capi_name account){
+      return intrinsics::get().call<intrinsics::get_token_balance>(token_id, account);
+   }
+
+   void issue_token(capi_name to, int64_t amount){
+      return intrinsics::get().call<intrinsics::issue_token>(to, amount);
+   }
+
+   void transfer_token(capi_name from, capi_name to, int64_t amount){
+      return intrinsics::get().call<intrinsics::transfer_token>(from, to, amount);
+   }
+
+   void redeem_token(int64_t amount){
+      return intrinsics::get().call<intrinsics::redeem_token>(amount);
+   }
+
 }

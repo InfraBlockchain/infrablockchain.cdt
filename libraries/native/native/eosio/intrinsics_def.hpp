@@ -11,6 +11,8 @@
 #include <eosio/transaction.h>
 #include <eosio/types.h>
 #include <eosio/security_group.h>
+#include <infrablockchain/standard_token.h>
+
 
 #include <type_traits>
 
@@ -164,7 +166,13 @@ intrinsic_macro(set_action_return_value) \
 intrinsic_macro(add_security_group_participants) \
 intrinsic_macro(remove_security_group_participants) \
 intrinsic_macro(in_active_security_group) \
-intrinsic_macro(get_active_security_group)
+intrinsic_macro(get_active_security_group) \
+intrinsic_macro(get_token_symbol) \
+intrinsic_macro(get_token_total_supply) \
+intrinsic_macro(get_token_balance) \
+intrinsic_macro(issue_token) \
+intrinsic_macro(transfer_token) \
+intrinsic_macro(redeem_token)
 
 
 #define CREATE_ENUM(name) \

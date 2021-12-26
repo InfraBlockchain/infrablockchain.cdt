@@ -719,7 +719,10 @@ struct generation_utils {
          "kv_set",
          "send_deferred",
          "send_inline",
-         "send_context_free_inline"
+         "send_context_free_inline",
+         "issue_token",
+         "transfer_token",
+         "redeem_token"
       };
 
       return write_host_funcs.count(func_decl->getNameInfo().getAsString()) >= 1;
