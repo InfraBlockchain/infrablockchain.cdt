@@ -723,7 +723,9 @@ struct generation_utils {
          "issue_token",
          "transfer_token",
          "redeem_token",
-         "set_system_token_list_packed"
+         "set_system_token_list_packed",
+         "set_trx_fee_for_action",
+         "unset_trx_fee_for_action"
       };
 
       return write_host_funcs.count(func_decl->getNameInfo().getAsString()) >= 1;

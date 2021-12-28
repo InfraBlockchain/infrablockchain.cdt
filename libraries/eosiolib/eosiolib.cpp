@@ -4,6 +4,7 @@
 #include "contracts/eosio/system.hpp"
 #include "contracts/eosio/privileged.hpp"
 #include "contracts/infrablockchain/system_token.hpp"
+#include "contracts/infrablockchain/transaction_fee.hpp"
 
 #include <algorithm>
 
@@ -168,6 +169,8 @@ namespace infrablockchain {
       uint32_t get_system_token_list_packed( char* data, uint32_t datalen );
       __attribute__((eosio_wasm_import))
       int64_t set_system_token_list_packed( const char* data, uint32_t datalen );
+      __attribute__((eosio_wasm_import))
+      uint32_t get_trx_fee_for_action_packed( uint64_t code, uint64_t action, char* data, uint32_t datalen );
    }
 
    // system_token.hpp
@@ -194,6 +197,15 @@ namespace infrablockchain {
       if (ret >= 0)
          return static_cast<uint64_t>(ret);
       return {};
+   }
+
+   // transaction_fee.hpp
+   void get_trx_fee_for_action( name code, name action, infrablockchain::tx_fee_for_action& trx_fee_for_action ) {
+      char buf[sizeof(infrablockchain::tx_fee_for_action)];
+      size_t size = get_trx_fee_for_action_packed( code.value, action.value, buf, sizeof(buf) );
+      eosio::check( size <= sizeof(buf), "buffer is too small" );
+      eosio::datastream<const char*> ds( buf, size_t(size) );
+      ds >> trx_fee_for_action;
    }
 
 } // namespace infrablockchain

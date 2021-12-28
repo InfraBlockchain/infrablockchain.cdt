@@ -944,4 +944,20 @@ extern "C" {
    int64_t set_system_token_list_packed( const char* data, uint32_t datalen ) {
       return intrinsics::get().call<intrinsics::set_system_token_list_packed>(data, datalen);
    }
+
+   void set_trx_fee_for_action( capi_name code, capi_name action, int32_t value, uint32_t fee_type ) {
+      return intrinsics::get().call<intrinsics::set_trx_fee_for_action>(code, action, value, fee_type);
+   }
+
+   void unset_trx_fee_for_action( capi_name code, capi_name action ) {
+      return intrinsics::get().call<intrinsics::unset_trx_fee_for_action>(code, action);
+   }
+
+   uint32_t get_trx_fee_for_action_packed( capi_name code, capi_name action, char* data, uint32_t datalen ) {
+      return intrinsics::get().call<intrinsics::get_trx_fee_for_action_packed>(code, action, data, datalen);
+   }
+
+   capi_name trx_fee_payer() {
+      return intrinsics::get().call<intrinsics::trx_fee_payer>();
+   }
 }
