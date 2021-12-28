@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../../core/eosio/serialize.hpp"
+
 namespace infrablockchain {
 
    using namespace eosio;
@@ -36,6 +38,9 @@ namespace infrablockchain {
        * 2: resource_consumption_dynamic_tx_fee_type, tx_fee_for_action.value => multiplier applied to resource consumption metric, 10000 = x1.0
        */
       uint32_t fee_type;
+
+      EOSLIB_SERIALIZE( tx_fee_for_action,
+                        (value)(fee_type) )
    };
 
    /**

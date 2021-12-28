@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../../core/eosio/name.hpp"
+#include "../../core/eosio/serialize.hpp"
+
 namespace infrablockchain {
 
    using namespace eosio;
@@ -26,13 +29,16 @@ namespace infrablockchain {
       /**
        * token account name selected as system token
        */
-      uint64_t token_id;
+      name token_id;
 
       /**
        * token value weight as transaction fee payment,
        * 10000 = 1.0x, 5000 = 0.5x (tx fee is charged 2x)
        */
       uint32_t token_weight;
+
+      EOSLIB_SERIALIZE( system_token,
+                        (token_id)(token_weight) )
    };
 
    /**

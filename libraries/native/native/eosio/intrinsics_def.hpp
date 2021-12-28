@@ -15,6 +15,7 @@
 #include <infrablockchain/standard_token.h>
 #include <infrablockchain/system_token.h>
 #include <infrablockchain/transaction_fee.h>
+#include <infrablockchain/proof_of_transaction.h>
 
 #include <type_traits>
 
@@ -181,7 +182,9 @@ intrinsic_macro(set_system_token_list_packed) \
 intrinsic_macro(set_trx_fee_for_action) \
 intrinsic_macro(unset_trx_fee_for_action) \
 intrinsic_macro(get_trx_fee_for_action_packed) \
-intrinsic_macro(trx_fee_payer)
+intrinsic_macro(trx_fee_payer) \
+intrinsic_macro(get_top_transaction_vote_receivers_packed) \
+intrinsic_macro(get_total_weighted_transaction_votes)
 
 
 #define CREATE_ENUM(name) \

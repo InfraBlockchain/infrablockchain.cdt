@@ -960,4 +960,12 @@ extern "C" {
    capi_name trx_fee_payer() {
       return intrinsics::get().call<intrinsics::trx_fee_payer>();
    }
+
+   uint32_t get_top_transaction_vote_receivers_packed( char *buffer, size_t size, uint32_t offset_rank, uint32_t limit ) {
+      return intrinsics::get().call<intrinsics::get_top_transaction_vote_receivers_packed>(buffer, size, offset_rank, limit);
+   }
+
+   double get_total_weighted_transaction_votes() {
+      return intrinsics::get().call<intrinsics::get_total_weighted_transaction_votes>();
+   }
 }

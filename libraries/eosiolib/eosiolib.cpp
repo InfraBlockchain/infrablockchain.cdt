@@ -5,6 +5,7 @@
 #include "contracts/eosio/privileged.hpp"
 #include "contracts/infrablockchain/system_token.hpp"
 #include "contracts/infrablockchain/transaction_fee.hpp"
+#include "contracts/infrablockchain/proof_of_transaction.hpp"
 
 #include <algorithm>
 
@@ -171,6 +172,8 @@ namespace infrablockchain {
       int64_t set_system_token_list_packed( const char* data, uint32_t datalen );
       __attribute__((eosio_wasm_import))
       uint32_t get_trx_fee_for_action_packed( uint64_t code, uint64_t action, char* data, uint32_t datalen );
+      __attribute__((eosio_wasm_import))
+      uint32_t get_top_transaction_vote_receivers_packed( char *buffer, size_t size, uint32_t offset_rank, uint32_t limit );
    }
 
    // system_token.hpp
@@ -180,7 +183,7 @@ namespace infrablockchain {
       if ( sys_token_list_packed_size > 0 ) {
          /// allocate buffer memory through memory manager
          char* buf_sys_token_list_data_packed = static_cast<char*>(malloc(sys_token_list_packed_size));
-         eosio::check( buf_sys_token_list_data_packed != nullptr, "malloc failed for get_system_token_list_packed" );
+         eosio::check( buf_sys_token_list_data_packed != nullptr, "malloc failed in get_system_token_list_packed" );
          get_system_token_list_packed( buf_sys_token_list_data_packed, sys_token_list_packed_size );
 
          eosio::datastream<const char*> ds( buf_sys_token_list_data_packed, sys_token_list_packed_size );
@@ -206,6 +209,25 @@ namespace infrablockchain {
       eosio::check( size <= sizeof(buf), "buffer is too small" );
       eosio::datastream<const char*> ds( buf, size_t(size) );
       ds >> trx_fee_for_action;
+   }
+
+   // proof_of_transaction.hpp
+   void get_top_transaction_vote_receivers( std::vector<infrablockchain::tx_vote_stat_for_account>& vote_receivers, uint32_t offset_rank, uint32_t limit ) {
+      vote_receivers.clear();
+      uint32_t vote_receiver_list_packed_size = get_top_transaction_vote_receivers_packed( nullptr, 0, offset_rank, limit );
+      if ( vote_receiver_list_packed_size > 0 ) {
+         /// allocate buffer memory through memory manager
+         char* buf_vote_receiver_list_data_packed = static_cast<char*>(malloc(vote_receiver_list_packed_size));
+         eosio::check( buf_vote_receiver_list_data_packed != nullptr, "malloc failed in get_top_transaction_vote_receivers_packed" );
+
+         // fetch top tx vote account list from chain core
+         get_top_transaction_vote_receivers_packed( buf_vote_receiver_list_data_packed, vote_receiver_list_packed_size, offset_rank, limit );
+
+         eosio::datastream<const char*> ds( buf_vote_receiver_list_data_packed, vote_receiver_list_packed_size );
+         ds >> vote_receivers;
+
+         free(buf_vote_receiver_list_data_packed);
+      }
    }
 
 } // namespace infrablockchain
