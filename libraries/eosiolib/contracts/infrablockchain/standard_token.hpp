@@ -17,7 +17,7 @@ namespace infrablockchain {
          int64_t get_token_total_supply( uint64_t token_id );
 
          __attribute__((eosio_wasm_import))
-         int64_t get_token_balance( uint64_t token_id, capi_name account );
+         int64_t get_token_balance( uint64_t token_id, uint64_t account );
 
          __attribute__((eosio_wasm_import))
          void issue_token( uint64_t to, int64_t amount );
