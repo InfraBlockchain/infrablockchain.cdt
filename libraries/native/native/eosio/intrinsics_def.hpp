@@ -175,7 +175,7 @@ intrinsic_macro(get_token_total_supply) \
 intrinsic_macro(get_token_balance) \
 intrinsic_macro(issue_token) \
 intrinsic_macro(transfer_token) \
-intrinsic_macro(redeem_token) \
+intrinsic_macro(retire_token) \
 intrinsic_macro(get_system_token_count) \
 intrinsic_macro(get_system_token_list_packed) \
 intrinsic_macro(set_system_token_list_packed) \

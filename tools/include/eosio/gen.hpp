@@ -722,7 +722,7 @@ struct generation_utils {
          "send_context_free_inline",
          "issue_token",
          "transfer_token",
-         "redeem_token",
+         "retire_token",
          "set_system_token_list_packed",
          "set_trx_fee_for_action",
          "unset_trx_fee_for_action"

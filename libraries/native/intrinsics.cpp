@@ -929,8 +929,8 @@ extern "C" {
       return intrinsics::get().call<intrinsics::transfer_token>(from, to, amount);
    }
 
-   void redeem_token(int64_t amount){
-      return intrinsics::get().call<intrinsics::redeem_token>(amount);
+   void retire_token(int64_t amount){
+      return intrinsics::get().call<intrinsics::retire_token>(amount);
    }
 
    uint32_t get_system_token_count() {
