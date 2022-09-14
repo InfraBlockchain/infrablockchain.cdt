@@ -61,8 +61,6 @@ To create manually the CMake configuration, the template `CMakeLists.txt` in the
       [[eosio::action]] void testact( name test ) {
       }
    };
-
-   EOSIO_DISPATCH( test, (testact) )
    ```
 
 3. The following CMake macros are provided:

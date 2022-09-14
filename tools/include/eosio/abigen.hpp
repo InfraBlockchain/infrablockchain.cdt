@@ -27,7 +27,7 @@
 #include <memory>
 #include <set>
 #include <map>
-
+#include <array>
 #include <jsoncons/json.hpp>
 
 using namespace llvm;
@@ -167,21 +167,25 @@ namespace eosio { namespace cdt {
          for (int i = 0; i < 2; ++i) {
             add_type(std::get<clang::QualType>(get_template_argument(type, i)));
          }
-         abi_struct kv;
+         abi_struct map_info;
          std::string name = get_type(type);
-         kv.name = name.substr(0, name.length() - 2);
-         kv.fields.push_back( {"key", get_template_argument_as_string(type)} );
-         kv.fields.push_back( {"value", get_template_argument_as_string(type, 1)} );
+         map_info.name = name.substr(0, name.length() - 2);
+         auto remove_ending_brackets = [&]( std::string name ) {
+            int i = name.length()-1;
+            for (; i >= 0; i--)
+               if ( name[i] != '[' && name[i] != ']' )
+                  break;
+            return name.substr(0,i+1);
+         };
+         map_info.name = remove_ending_brackets(name);
+         map_info.fields.push_back( {"key", get_template_argument_as_string(type)} );
+         map_info.fields.push_back( {"value", get_template_argument_as_string(type, 1)} );
          add_type(std::get<clang::QualType>(get_template_argument(type)));
          add_type(std::get<clang::QualType>(get_template_argument(type, 1)));
-         _abi.structs.insert(kv);
+         _abi.structs.insert(map_info);
       }
 
       void add_struct( const clang::CXXRecordDecl* decl, const std::string& rname="" ) {
-         if (is_kv_internal(decl) || is_kv_table(decl)) {
-            return;
-         }
-
          abi_struct ret;
          if ( decl->getNumBases() == 1 ) {
             ret.base = get_type(decl->bases_begin()->getType());
@@ -225,14 +229,6 @@ namespace eosio { namespace cdt {
       }
 
       void add_table( const clang::CXXRecordDecl* decl ) {
-         // short circuit if we happen across `eosio::kv::map` declaration
-         if (is_kv_map(decl))
-            return;
-         if (is_kv_table(decl)) {
-            add_kv_table(decl);
-            return;
-         }
-
          tables.insert(decl);
          abi_table t;
          t.type = decl->getNameAsString();
@@ -257,106 +253,6 @@ namespace eosio { namespace cdt {
          _abi.tables.insert(t);
       }
 
-      void add_kv_map(const clang::ClassTemplateSpecializationDecl* decl) {
-          abi_kv_table akt;
-          const auto& first_arg  = decl->getTemplateArgs()[0];
-          const auto& second_arg = decl->getTemplateArgs()[1];
-          const auto& third_arg  = decl->getTemplateArgs()[2];
-          const auto& fourth_arg = decl->getTemplateArgs()[3];
-
-          if (first_arg.getKind() != clang::TemplateArgument::ArgKind::Integral)
-             CDT_ERROR("abigen_error", decl->getLocation(), "first template argument to KV map is not an integral const");
-          if (second_arg.getKind() != clang::TemplateArgument::ArgKind::Type)
-             CDT_ERROR("abigen_error", decl->getLocation(), "second template argument to KV map is not a type");
-          if (third_arg.getKind() != clang::TemplateArgument::ArgKind::Type)
-             CDT_ERROR("abigen_error", decl->getLocation(), "third template argument to KV map is not a type");
-
-          akt.name = name_to_string(first_arg.getAsIntegral().getExtValue());
-          akt.type = translate_type(third_arg.getAsType()); // pick the "value" type
-          add_type(third_arg.getAsType());
-          akt.indices.push_back({name_to_string(fourth_arg.getAsIntegral().getExtValue()),
-                                  translate_type(second_arg.getAsType())}); // set the "key" as the index type
-          _abi.kv_tables.insert(akt);
-      }
-
-      // TODO remove this after the next release and extend the above for handling the new table type
-      void add_kv_table(const clang::CXXRecordDecl* const decl) {
-         clang::CXXRecordDecl* table_type;
-         std::string templ_name;
-
-         for (const auto& base : decl->bases()) {
-            if (const auto templ_base = dyn_cast<clang::ClassTemplateSpecializationDecl>(base.getType()->getAsCXXRecordDecl())) {
-               const auto& templ_type = templ_base->getTemplateArgs()[0];
-               table_type = templ_type.getAsType().getTypePtr()->getAsCXXRecordDecl();
-               add_struct(table_type);
-
-               const auto templ_val = templ_base->getTemplateArgs()[1].getAsIntegral().getExtValue();
-               templ_name = name_to_string(templ_val);
-            }
-         }
-
-         abi_kv_table t;
-         t.type = table_type->getNameAsString();
-         t.name = templ_name;
-
-         const auto get_string_name_from_kv_index = [&](clang::Expr* expr) {
-            std::string index_name;
-            if (const auto expr_wc = dyn_cast<clang::ExprWithCleanups>(expr)) {
-               if (const auto cc_expr = dyn_cast<clang::CXXConstructExpr>(expr_wc->getSubExpr())) {
-                  const auto arg = cc_expr->getArg(0);
-                  if (const auto cfc_expr = dyn_cast<clang::CXXFunctionalCastExpr>(arg)) {
-                     if (const auto il_expr = dyn_cast<clang::InitListExpr>(cfc_expr->getSubExpr())) {
-                        const auto init = il_expr->getInit(0);
-                        if (const auto udl = dyn_cast<clang::UserDefinedLiteral>(init)) {
-                           const auto child = udl->getRawSubExprs()[0];
-                           if (const auto ice = dyn_cast<clang::ImplicitCastExpr>(child)) {
-                              if (const auto dre = dyn_cast<clang::DeclRefExpr>(ice->getSubExpr())) {
-                                 if (const auto fd = dyn_cast<clang::FunctionDecl>(dre->getDecl())) {
-                                    const auto& templ_pack = fd->getTemplateSpecializationArgs()->get(1);
-                                    for (const auto& ta : templ_pack.pack_elements()) {
-                                       const auto val = (char)ta.getAsIntegral().getExtValue();
-                                       index_name.push_back(val);
-                                    }
-                                 }
-                              }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-            return index_name;
-         };
-
-         for (const auto field : decl->fields()) {
-            std::string index_name = get_string_name_from_kv_index(field->getInClassInitializer());
-            std::string idx_type;
-            const auto qt = field->getType();
-            const auto index_qtype = std::get<clang::QualType>(get_template_argument(qt));
-            const auto index_type = clang::TemplateArgument(index_qtype);
-            if (const auto elab_type = dyn_cast<clang::ElaboratedType>(index_type.getAsType().getTypePtr())) {
-               // This is the macro case
-               const auto decayed_type = elab_type->getNamedType();
-               if (const auto d = dyn_cast<clang::TemplateSpecializationType>(decayed_type)) {
-                  const auto& decl_type = d->getArg(0);
-                  if (const auto dcl_type = dyn_cast<clang::DecltypeType>(decl_type.getAsType())) {
-                     idx_type = get_type_string_from_kv_index_macro_decltype(dcl_type);
-                  } else {
-                     idx_type = get_type(index_type.getAsType());
-                  }
-               } else {
-                  idx_type = get_type(index_type.getAsType());
-               }
-            } else {
-               // This is the non-macro case
-               idx_type = get_type(index_type.getAsType());
-            }
-            t.indices.push_back({index_name, idx_type});
-         }
-
-         _abi.kv_tables.insert(t);
-      }
-
       void add_clauses( const std::vector<std::pair<std::string, std::string>>& clauses ) {
          for ( auto clp : clauses ) {
             _abi.ricardian_clauses.push_back({std::get<0>(clp), std::get<1>(clp)});
@@ -379,11 +275,214 @@ namespace eosio { namespace cdt {
          _abi.variants.insert(var);
       }
 
+      inline void adding_explicit_nested_dispatcher(const clang::QualType& inside_type, int depth, std::string & inside_type_name){
+         if(is_explicit_nested(inside_type)){  // inside type is still explict nested  <<>>
+            inside_type_name = add_explicit_nested_type(inside_type, depth + 1);
+         } else if(is_explicit_container(inside_type)) {  // inside type is single container,  only one <>
+            inside_type_name = add_explicit_nested_type(inside_type, depth + 1);
+         }else if (is_builtin_type(translate_type(inside_type))){   // inside type is builtin
+            inside_type_name = translate_type(inside_type);
+         } else if (is_aliasing(inside_type)) { // inside type is an alias
+            add_typedef(inside_type);
+            inside_type_name = get_base_type_name( inside_type );
+         }   else if (is_template_specialization(inside_type, {})) {
+            add_struct(inside_type.getTypePtr()->getAsCXXRecordDecl(), get_template_name(inside_type));
+            inside_type_name = get_template_name(inside_type);
+         }else if (inside_type.getTypePtr()->isRecordType()) {
+            add_struct(inside_type.getTypePtr()->getAsCXXRecordDecl());
+            inside_type_name = inside_type.getTypePtr()->getAsCXXRecordDecl()->getNameAsString();
+         } else {
+            std::string errstring = "adding_explicit_nested_dispatcher: this inside type  ";
+            errstring += inside_type.getAsString();
+            errstring += " is unexpected, maybe not supported so far. \n";
+            CDT_INTERNAL_ERROR(errstring);
+         }
+      }
+
+      void add_explicit_nested_linear(const clang::QualType& type, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         auto inside_type = std::get<clang::QualType>(get_template_argument(type));
+         std::string inside_type_name;
+         adding_explicit_nested_dispatcher(inside_type, depth, inside_type_name);
+         if(inside_type_name != ""){
+            ret += inside_type_name;
+            abidef.type = inside_type_name + ( (tname == "optional") ? "?" : "[]" );
+            gottype = true;
+         }
+      }
+
+      void add_explicit_nested_map(const clang::QualType& type, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         clang::QualType inside_type[2];
+         std::string inside_type_name[2];
+         for(int i = 0; i < 2; ++i){
+            inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+            adding_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+         }
+
+         if(inside_type_name[0] != "" && inside_type_name[1] != ""){
+            ret += inside_type_name[0] + "_" + inside_type_name[1];
+            abidef.type = "pair_" + inside_type_name[0] + "_" + inside_type_name[1] + "[]";
+
+            abi_struct kv;
+            kv.name = "pair_" + inside_type_name[0] + "_" + inside_type_name[1];
+            kv.fields.push_back( {"key", inside_type_name[0]} );
+            kv.fields.push_back( {"value", inside_type_name[1]} );
+            _abi.structs.insert(kv);
+
+            gottype = true;
+         }
+      }
+
+      void add_explicit_nested_pair(const clang::QualType& type, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         clang::QualType inside_type[2];
+         std::string inside_type_name[2];
+         for(int i = 0; i < 2; ++i){
+            inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+            adding_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+         }
+
+         if(inside_type_name[0] != "" && inside_type_name[1] != ""){
+            ret += inside_type_name[0] + "_" + inside_type_name[1];
+            abidef.type = "pair_" + inside_type_name[0] + "_" + inside_type_name[1];
+
+            abi_struct pair;
+            pair.name = "pair_" + inside_type_name[0] + "_" + inside_type_name[1];
+            pair.fields.push_back( {"first", inside_type_name[0]} );
+            pair.fields.push_back( {"second", inside_type_name[1]} );
+            _abi.structs.insert(pair);
+
+            gottype = true;
+         }
+      }
+
+      void add_explicit_nested_tuple(const clang::QualType& type, int argcnt, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         std::vector<clang::QualType> inside_type(argcnt);
+         std::vector<std::string> inside_type_name(argcnt);
+         for(int i = 0; i < argcnt; ++i){
+            inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+            adding_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+         }
+         bool allgot = true;
+         for(auto & inside_tn : inside_type_name) {
+            if(inside_tn == "") allgot = false;
+         }
+         if(allgot){
+            abi_struct tup;
+            tup.name = "tuple_";
+            abidef.type = "tuple_";
+            for (int i = 0; i < argcnt; ++i) {
+               ret += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               abidef.type += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               tup.name += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               tup.fields.push_back( {"field_"+std::to_string(i), inside_type_name[i]} );
+            }
+            _abi.structs.insert(tup);
+
+            gottype = true;
+         }
+      }
+
+      void add_explicit_nested_array(const clang::QualType& type, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         auto inside_type = std::get<clang::QualType>(get_template_argument(type));
+         std::string inside_type_name;
+         adding_explicit_nested_dispatcher(inside_type, depth, inside_type_name);
+
+         if(inside_type_name != ""){
+            ret += inside_type_name + "_";
+            std::string orig = type.getAsString();
+            auto pos1 = orig.find_last_of(',');
+            auto pos2 = orig.find_last_of('>');
+            std::string digits = orig.substr(pos1 + 1, pos2 - pos1 - 1);
+            digits.erase(std::remove(digits.begin(), digits.end(), ' '), digits.end());
+            ret += digits;
+            abidef.type = inside_type_name + "[" + digits + "]" ;
+            gottype = true;
+         }
+      }
+
+      void add_explicit_nested_variant(const clang::QualType& type, int argcnt, int depth, abi_typedef & abidef, std::string & ret, const std::string & tname, bool & gottype){
+         ret += tname + "_";
+         std::vector<clang::QualType> inside_type(argcnt);
+         std::vector<std::string> inside_type_name(argcnt);
+         for(int i = 0; i < argcnt; ++i){
+            inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+            adding_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+         }
+         bool allgot = true;
+         for(auto & inside_tn : inside_type_name) {
+            if(inside_tn == "") allgot = false;
+         }
+
+         if(allgot){
+            abi_variant var;
+            var.name = "variant_";
+            abidef.type = "variant_";
+            for (int i = 0; i < argcnt; ++i) {
+               ret += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               abidef.type += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               var.name += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+               var.types.push_back( inside_type_name[i]);
+            }
+            _abi.variants.insert(var);
+
+            gottype = true;
+         }
+      }
+
+      // return combined typename, and mid-type will be add automatically, only be used on explicit nested type has <<>> or more
+      std::string add_explicit_nested_type(const clang::QualType& type, int depth = 0){
+         abi_typedef abidef;
+         std::string ret = "B_";
+         bool gottype = false;
+         auto pt = llvm::dyn_cast<clang::ElaboratedType>(type.getTypePtr());
+         if(auto tst = llvm::dyn_cast<clang::TemplateSpecializationType>(pt ? pt->desugar().getTypePtr() : type.getTypePtr())){
+            if(auto rt = llvm::dyn_cast<clang::RecordType>(tst->desugar())){
+               if(auto * decl = rt->getDecl()){
+                  std::string tname = decl->getName().str();
+                  if(tname == "vector" || tname == "set" || tname == "deque" || tname == "list" || tname == "optional") {
+                     add_explicit_nested_linear(type, depth,  abidef, ret, tname, gottype);
+                  } else if (tname == "map" ) {
+                     add_explicit_nested_map(type, depth, abidef, ret, tname, gottype);
+                  } else if (tname == "pair" ) {
+                     add_explicit_nested_pair(type, depth, abidef, ret, tname, gottype);
+                  } else if (tname == "tuple")  {
+                     int argcnt = tst->getNumArgs();
+                     add_explicit_nested_tuple(type, argcnt, depth, abidef, ret, tname, gottype);
+                  } else if (tname == "array")  {
+                     add_explicit_nested_array(type, depth, abidef, ret, tname, gottype);
+                  } else if (tname == "variant") {
+                     int argcnt = tst->getNumArgs();
+                     add_explicit_nested_variant(type, argcnt, depth, abidef, ret, tname, gottype);
+                  }
+               }
+            }
+         }
+
+         if(!gottype) {
+            std::string errstring = "add_explicit_nested_type failed to fetch type from ";
+            errstring += type.getAsString();
+            CDT_INTERNAL_ERROR(errstring);
+            return "";
+         }
+         ret +="_E";
+         abidef.new_type_name = ret;  // the name is combined from container name and low layer type
+         if(depth > 0) _abi.typedefs.insert(abidef);
+         return ret;
+      }
+
       void add_type( const clang::QualType& t ) {
          if (evaluated.count(t.getTypePtr()))
             return;
          evaluated.insert(t.getTypePtr());
          auto type = get_ignored_type(t);
+         if(is_explicit_nested(t)){
+            add_explicit_nested_type(t.getNonReferenceType());
+            return;
+         }
          if (!is_builtin_type(translate_type(type))) {
             if (is_aliasing(type)) {
                add_typedef(type);
@@ -397,6 +496,8 @@ namespace eosio { namespace cdt {
                add_pair(type);
             else if (is_template_specialization(type, {"tuple"}))
                add_tuple(type);
+            else if (is_template_specialization(type, {"array"}) )
+               add_type(std::get<clang::QualType>(get_template_argument(type, 0)));
             else if (is_template_specialization(type, {"variant"}))
                add_variant(type);
             else if (is_template_specialization(type, {})) {
@@ -468,27 +569,6 @@ namespace eosio { namespace cdt {
          o["key_names"] = ojson::array();
          o["key_types"] = ojson::array();
          return o;
-      }
-
-      std::pair<std::string, ojson> kv_table_to_json( const abi_kv_table& t ) {
-         ojson o;
-         o["type"] = t.type;
-         auto indices = ojson::object();
-         for (int i = 0; i < t.indices.size(); ++i) {
-            auto idx = t.indices[i];
-            if (i == 0) {
-               ojson oj;
-               oj["name"] = idx.name;
-               oj["type"] = idx.type;
-               o["primary_index"] = oj;
-            } else {
-               ojson o;
-               o["type"] = idx.type;
-               indices.insert_or_assign(idx.name, o);
-            }
-         }
-         o["secondary_indices"] = indices;
-         return {t.name, o};
       }
 
       ojson action_result_to_json( const abi_action_result& result ) {
@@ -585,10 +665,6 @@ namespace eosio { namespace cdt {
                if (as.name == _translate_type(t.type))
                   return true;
             }
-            for ( const auto t : _abi.kv_tables ) {
-               if (as.name == _translate_type(t.type))
-                  return true;
-            }
             for( auto td : _abi.typedefs ) {
                if (as.name == _translate_type(remove_suffix(td.type)))
                   return true;
@@ -650,11 +726,6 @@ namespace eosio { namespace cdt {
          for ( auto t : set_of_tables ) {
             o["tables"].push_back(table_to_json( t ));
          }
-         o["kv_tables"]  = ojson::object();
-         for ( const auto& t : _abi.kv_tables ) {
-            auto kv_table = kv_table_to_json(t);
-            o["kv_tables"].insert_or_assign(kv_table.first, kv_table.second);
-         }
          o["ricardian_clauses"]  = ojson::array();
          for ( auto rc : _abi.ricardian_clauses ) {
             o["ricardian_clauses"].push_back(clause_to_json( rc ));
@@ -679,39 +750,6 @@ namespace eosio { namespace cdt {
          std::set<abi_table>                   ctables;
          std::map<std::string, std::string>    rcs;
          std::set<const clang::Type*>          evaluated;
-
-         std::string get_type_string_from_kv_index_macro_decltype(const clang::DecltypeType* decl) {
-            if (const auto ref_type = dyn_cast<clang::LValueReferenceType>(decl->desugar())) {
-               const auto pt = ref_type->getPointeeType();
-               if (const auto record_type = dyn_cast<clang::RecordType>(pt)) {
-                  const auto gdt = record_type->getDecl();
-                  if (const auto ctsd = dyn_cast<clang::ClassTemplateSpecializationDecl>(gdt)) {
-                     const auto& template_args = ctsd->getTemplateArgs();
-                     // Handle tuples, which have the template arguments treated as a pack
-                     if (template_args.size() == 1 && template_args[0].pack_size() > 1) {
-                        std::string ret = ctsd->getName().str();
-                        for (const auto& pack_elem : template_args[0].getPackAsArray()) {
-                           ret += "_";
-                           ret += get_type(pack_elem.getAsType());
-                        }
-                        return ret;
-                     } else {
-                        // Handle non-tuple templates
-                        return get_type(record_type->desugar());
-                     }
-                  } else {
-                     // Handle non-template records
-                     return get_type(record_type->desugar());
-                  }
-               } else {
-                  // Handle non-records
-                  return get_type(pt);
-               }
-            }
-            CDT_INTERNAL_ERROR("Error generating type from kv index definition");
-            return "";
-         }
-
    };
 
    class eosio_abigen_visitor : public RecursiveASTVisitor<eosio_abigen_visitor>, public generation_utils {
@@ -730,8 +768,8 @@ namespace eosio { namespace cdt {
 
          virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl* decl) {
             if (!has_added_clauses) {
-               ag.add_clauses(parse_clauses());
-               ag.add_contracts(parse_contracts());
+               ag.add_clauses(ag.parse_clauses());
+               ag.add_contracts(ag.parse_contracts());
                has_added_clauses = true;
             }
 
@@ -746,8 +784,8 @@ namespace eosio { namespace cdt {
          }
          virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl* decl) {
             if (!has_added_clauses) {
-               ag.add_clauses(parse_clauses());
-               ag.add_contracts(parse_contracts());
+               ag.add_clauses(ag.parse_clauses());
+               ag.add_contracts(ag.parse_contracts());
                has_added_clauses = true;
             }
             if ((decl->isEosioAction() || decl->isEosioTable()) && ag.is_eosio_contract(decl, ag.get_contract_name())) {
@@ -767,9 +805,6 @@ namespace eosio { namespace cdt {
                if (d->getName() == "multi_index") {
                   ag.add_table(d->getTemplateArgs()[0].getAsIntegral().getExtValue(),
                         (clang::CXXRecordDecl*)((clang::RecordType*)d->getTemplateArgs()[1].getAsType().getTypePtr())->getDecl());
-               } else if (d->getName() == "map") {
-                  if (d->getSpecializedTemplate()->getTemplatedDecl()->isEosioTable())
-                     ag.add_kv_map(d);
                }
             }
             return true;

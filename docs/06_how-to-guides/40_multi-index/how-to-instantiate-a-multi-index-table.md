@@ -54,7 +54,7 @@ Add the data structure data members. Each data member corresponds to a field of 
 
 ### 3. Define The Primary Index
 
-Add the definition of the primary index for the multi-index table. The primary index type must be uint64_t, it must be unique and must be named `primary_key()`, otherwise the compiler (eosio-cpp) will generate an error saying it can not find the field to use as the primary key:
+Add the definition of the primary index for the multi-index table. The primary index type must be uint64_t, it must be unique and must be named `primary_key()`, otherwise the compiler (cdt-cpp) will generate an error saying it can not find the field to use as the primary key:
 
 ```diff
   // the data structure which defines each row of the table

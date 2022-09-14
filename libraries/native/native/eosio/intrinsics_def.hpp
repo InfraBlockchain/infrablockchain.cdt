@@ -3,6 +3,7 @@
 #include <eosio/action.h>
 #include <eosio/chain.h>
 #include <eosio/crypto.h>
+#include <eosio/crypto_ext.h>
 #include <eosio/db.h>
 #include <eosio/permission.h>
 #include <eosio/print.h>
@@ -52,7 +53,6 @@ intrinsic_macro(set_proposed_producers) \
 intrinsic_macro(set_proposed_producers_ex) \
 intrinsic_macro(get_blockchain_parameters_packed) \
 intrinsic_macro(set_blockchain_parameters_packed) \
-intrinsic_macro(set_kv_parameters_packed) \
 intrinsic_macro(is_privileged) \
 intrinsic_macro(set_privileged) \
 intrinsic_macro(is_feature_activated) \
@@ -184,7 +184,15 @@ intrinsic_macro(unset_trx_fee_for_action) \
 intrinsic_macro(get_trx_fee_for_action_packed) \
 intrinsic_macro(trx_fee_payer) \
 intrinsic_macro(get_top_transaction_vote_receivers_packed) \
-intrinsic_macro(get_total_weighted_transaction_votes)
+intrinsic_macro(get_total_weighted_transaction_votes) \
+intrinsic_macro(blake2_f) \
+intrinsic_macro(sha3) \
+intrinsic_macro(k1_recover) \
+intrinsic_macro(alt_bn128_add) \
+intrinsic_macro(alt_bn128_mul) \
+intrinsic_macro(alt_bn128_pair) \
+intrinsic_macro(mod_exp)
+
 
 
 #define CREATE_ENUM(name) \

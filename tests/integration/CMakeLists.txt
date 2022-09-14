@@ -32,6 +32,8 @@ file(GLOB INT_TESTS "*.cpp" "*.hpp")
 
 add_eosio_test_executable( integration_tests ${INT_TESTS} )
 
+target_link_libraries( integration_tests ${GMP_LIBRARY} )
+
 foreach(TEST_SUITE ${INT_TESTS}) # create an independent target for each test suite
   execute_process(COMMAND bash -c "grep -E 'BOOST_AUTO_TEST_SUITE\\s*[(]' ${TEST_SUITE} | grep -vE '//.*BOOST_AUTO_TEST_SUITE\\s*[(]' | cut -d ')' -f 1 | cut -d '(' -f 2" OUTPUT_VARIABLE SUITE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE) # get the test suite name from the *.cpp file
   if (NOT "" STREQUAL "${SUITE_NAME}") # ignore empty lines

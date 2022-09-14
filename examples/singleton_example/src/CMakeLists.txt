@@ -1,6 +1,5 @@
 project(singleton_example)
 
-set(INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR "Off")
 find_package(infrablockchain.cdt)
 
 add_contract( singleton_example singleton_example singleton_example.cpp )

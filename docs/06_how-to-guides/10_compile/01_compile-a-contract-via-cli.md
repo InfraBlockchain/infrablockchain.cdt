@@ -6,17 +6,9 @@ content_title: How to compile a smart contract via CLI
 
 This guide provides instructions how to compile a smart contract using the command line interface (CLI).
 
-## Reference
-
-See the following code reference:
-
-* The [`infrablockchain-cpp`](https://developers.infrablockchain.com/manuals/infrablockchain.cdt/v2.0/command-reference/infrablockchain-cpp) tool.
-
 ## Before you begin
 
 * You have the source of the contract saved in a local folder, e.g. `./examples/hello/`
-For details on how to create your first contract follow the [Hello World Contract](https://developers.infrablockchain.com/welcome/latest/smart-contract-guides/hello-world) guide.
-
 ## Procedure
 
 Follow the following steps to compile your contract.

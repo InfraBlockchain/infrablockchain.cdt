@@ -5,6 +5,8 @@
 #include "core/eosio/crypto.hpp"
 #include "core/eosio/datastream.hpp"
 
+#include <cstring>
+
 extern "C" {
    struct __attribute__((aligned (16))) capi_checksum160 { uint8_t hash[20]; };
    struct __attribute__((aligned (16))) capi_checksum256 { uint8_t hash[32]; };
@@ -40,7 +42,6 @@ extern "C" {
    __attribute__((eosio_wasm_import))
    void assert_recover_key( const capi_checksum256* digest, const char* sig,
                             size_t siglen, const char* pub, size_t publen );
-
 }
 
 namespace eosio {
@@ -130,5 +131,4 @@ namespace eosio {
                             sig_data.data(), sig_data.size(),
                             pubkey_data.data(), pubkey_data.size() );
    }
-
 }

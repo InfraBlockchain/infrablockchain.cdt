@@ -360,7 +360,7 @@ Find below their corresponding sections in the `.abi` files:
 <hr>Start up a blockchain instance, compile this smart contract, and test it out.
 
 ```
-~/binary_extension_contract $ eosio-cpp binary_extension_contract.cpp -o binary_extension_contract.wasm
+~/binary_extension_contract $ cdt-cpp binary_extension_contract.cpp -o binary_extension_contract.wasm
 ```
 
 ```
@@ -503,7 +503,7 @@ struct [[eosio::table]] structure {
 Next, upgrade the contract and try to read from table and write to table the original way:
 
 ```
-~/binary_extension_contract $ eosio-cpp binary_extension_contract.cpp -o binary_extension_contract.wasm
+~/binary_extension_contract $ cdt-cpp binary_extension_contract.cpp -o binary_extension_contract.wasm
 ```
 
 ```

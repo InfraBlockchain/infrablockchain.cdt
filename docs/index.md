@@ -1,9 +1,13 @@
 # InfraBlockchain.CDT (Contract Development Toolkit)
 
-InfraBlockchain.CDT is a toolchain for WebAssembly (WASM) and set of tools to facilitate smart contract development for the InfraBlockchain platform. In addition to being a general purpose WebAssembly toolchain, [InfraBlockchain](https://github.com/InfraBlockchain/infrablockchain) specific optimizations are available to support building InfraBlockchain smart contracts.  This new toolchain is built around [Clang 7](https://github.com/eosio/llvm), which means that InfraBlockchain.CDT has the most currently available optimizations and analyses from LLVM, but as the WASM target is still considered experimental, some optimizations are incomplete or not available.
+InfraBlockchain.CDT is a C/C++ toolchain targeting WebAssembly (WASM) and a set of tools to facilitate development of smart contracts written in C/C++ that are meant to be deployed to an [InfraBlockchain](https://github.com/InfraBlockchain/infrablockchain) blockchain.
 
-## New Introductions
+In addition to being a general purpose WebAssembly toolchain, specific features and optimizations are available to support building InfraBlockchain-based smart contracts. This new toolchain is built around [Clang 9](https://github.com/AntelopeIO/cdt-llvm), which means that InfraBlockchain.CDT inherits the optimizations and analyses from that version of LLVM, but as the WASM target is still considered experimental, some optimizations are incomplete or not available.
 
-As of this release two new repositories are under the suite of tools provided by **InfraBlockchain.CDT**.  These are the [Ricardian Template Toolkit](https://github.com/eosio/ricardian-template-toolkit) and the [Ricardian Specification](https://github.com/eosio/ricardian-spec). The **Ricardian Template Toolkit** is a set of libraries to facilitate smart contract writers in crafting their Ricardian contracts.  The Ricardian specification is the working specification for the above mentioned toolkit.  Please note that both projects are **alpha** releases and are subject to change.
+## Upgrading
 
+If you are upgrading to InfraBlockchain.CDT version 3.0 or later from version 1.8.1 (or earlier) of [EOSIO.CDT](https://github.com/EOSIO/eosio.cdt), then please read [EOSIO.CDT to CDT](./04_upgrading/eosio.cdt-to-cdt.md).
 
+## License
+
+[MIT](../LICENSE)

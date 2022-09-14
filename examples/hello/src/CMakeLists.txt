@@ -1,6 +1,5 @@
 project(hello)
 
-set(INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR "Off")
 find_package(infrablockchain.cdt)
 
 add_contract( hello hello hello.cpp )

@@ -2,14 +2,11 @@ if(INFRABLOCKCHAIN_CDT_ROOT STREQUAL "" OR NOT INFRABLOCKCHAIN_CDT_ROOT)
    set(INFRABLOCKCHAIN_CDT_ROOT "@CDT_ROOT_DIR@")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${INFRABLOCKCHAIN_CDT_ROOT}/lib/cmake/infrablockchain.cdt)
-if (NOT INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR STREQUAL "Off")
-    set(INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR "On")
-    include(InfraBlockchainWasmToolchain)
-endif()
+set(INFRABLOCKCHAIN_CDT_VERSION "@VERSION_FULL@")
+
+list(APPEND CMAKE_MODULE_PATH ${INFRABLOCKCHAIN_CDT_ROOT}/lib/cmake/cdt)
 
 include(InfraBlockchainCDTMacros)
-  
 
 function(EXTRACT_MAJOR_MINOR_FROM_VERSION version success major minor)
    string(REGEX REPLACE "^([0-9]+)\\..+$" "\\1" _major "${version}")

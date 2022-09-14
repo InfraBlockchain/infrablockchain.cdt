@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 
 project(infrablockchain_libraries)
 
-find_program(CCACHE_FOUND ccache)
-if (CCACHE_FOUND)
-    message(STATUS "Using ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-endif()
-
 list(APPEND CMAKE_MODULE_PATH ${INFRABLOCKCHAIN_CDT_BIN})
 include(InfraBlockchainCDTMacros)
 

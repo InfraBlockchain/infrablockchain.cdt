@@ -1,6 +1,5 @@
 project(send_inline)
 
-set(INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR "Off")
 find_package(infrablockchain.cdt)
 
 add_contract( send_inline send_inline send_inline.cpp )

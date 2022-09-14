@@ -500,8 +500,161 @@ struct generation_utils {
       return _translate_type(replace_in_name(ret));
    }
 
+   inline void translating_explicit_nested_dispatcher(const clang::QualType& inside_type, int depth, std::string & inside_type_name){
+      if(is_explicit_nested(inside_type)){  // inside type is still explict nested  <<>>
+         inside_type_name = translate_explicit_nested_type(inside_type, depth + 1);
+      } else if(is_explicit_container(inside_type)) {  // inside type is single container,  only one <>
+         inside_type_name = translate_explicit_nested_type(inside_type, depth + 1);
+      }else if (is_builtin_type(translate_type(inside_type))){   // inside type is builtin
+         inside_type_name = translate_type(inside_type);
+      } else if (is_aliasing(inside_type)) { // inside type is a alias
+         inside_type_name = get_base_type_name( inside_type );
+      } else if (is_template_specialization(inside_type, {})) {
+         inside_type_name = get_template_name(inside_type);
+      }else if (inside_type.getTypePtr()->isRecordType()) {
+         inside_type_name = inside_type.getTypePtr()->getAsCXXRecordDecl()->getNameAsString();
+      } else {
+         std::string errstring = "translating_explicit_nested_dispatcher: this inside type  ";
+         errstring += inside_type.getAsString();
+         errstring += " is unexpected, maybe not supported so far. \n";
+         CDT_INTERNAL_ERROR(errstring);
+      }
+   }
+
+   void translate_explicit_nested_linear_or_optional(const clang::QualType& type, int depth, std::string & ret, const std::string & tname, bool & gottype){
+      ret += depth > 0 ? tname + "_" : "";
+      auto inside_type = std::get<clang::QualType>(get_template_argument(type));
+      std::string inside_type_name;
+      translating_explicit_nested_dispatcher(inside_type, depth, inside_type_name);
+      if(inside_type_name != ""){
+         ret += inside_type_name;
+         ret += depth > 0 ? "_E" : ( (tname == "optional") ? "?" : "[]" );
+         gottype = true;
+      }
+   }
+
+   void translate_explicit_nested_map_or_pair(const clang::QualType& type, int depth, std::string & ret, const std::string & tname, bool & gottype){
+      ret += depth > 0 ? tname + "_" : "pair_";
+      clang::QualType inside_type[2];
+      std::string inside_type_name[2];
+      for(int i = 0; i < 2; ++i){
+         inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+         translating_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+      }
+
+      if(inside_type_name[0] != "" && inside_type_name[1] != ""){
+         ret += inside_type_name[0] + "_" + inside_type_name[1];
+         ret += depth > 0 ? "_E" : ( tname == "map" ? "[]" : "");
+         gottype = true;
+      }
+   }
+
+   void translate_explicit_nested_tuple(const clang::QualType& type, int depth, int argcnt, std::string & ret, const std::string & tname, bool & gottype){
+      ret += tname + "_";
+      std::vector<clang::QualType> inside_type(argcnt);
+      std::vector<std::string> inside_type_name(argcnt);
+      for(int i = 0; i < argcnt; ++i){
+         inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+         translating_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+      }
+      bool allgot = true;
+      for(auto & inside_tn : inside_type_name) {
+         if(inside_tn == "") allgot = false;
+      }
+      if(allgot){
+         for (int i = 0; i < argcnt; ++i) {
+            ret += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+         }
+         ret += depth > 0 ? "_E" : "";
+         gottype = true;
+      }
+   }
+
+   void translate_explicit_nested_array(const clang::QualType& type, int depth, std::string & ret, const std::string & tname, bool & gottype){
+      ret += depth > 0 ? tname + "_" : "";
+      auto inside_type = std::get<clang::QualType>(get_template_argument(type, 0));
+      std::string inside_type_name;
+      translating_explicit_nested_dispatcher(inside_type, depth, inside_type_name);
+
+      if(inside_type_name != ""){
+         ret += inside_type_name;
+         std::string orig = type.getAsString();
+         auto pos1 = orig.find_last_of(',');
+         auto pos2 = orig.find_last_of('>');
+         std::string digits = orig.substr(pos1 + 1, pos2 - pos1 - 1);
+         digits.erase(std::remove(digits.begin(), digits.end(), ' '), digits.end());
+         if(depth == 0){
+            ret += "[" + digits + "]";
+         } else {
+            ret += "_" + digits + "_E";
+         }
+
+         gottype = true;
+      }
+   }
+
+   void translate_explicit_nested_variant(const clang::QualType& type, int depth, int argcnt, std::string & ret, const std::string & tname, bool & gottype){
+      ret += tname + "_";
+      std::vector<clang::QualType> inside_type(argcnt);
+      std::vector<std::string> inside_type_name(argcnt);
+      for(int i = 0; i < argcnt; ++i){
+         inside_type[i] = std::get<clang::QualType>(get_template_argument(type, i));
+         translating_explicit_nested_dispatcher(inside_type[i], depth, inside_type_name[i]);
+      }
+      bool allgot = true;
+      for(auto & inside_tn : inside_type_name) {
+         if(inside_tn == "") allgot = false;
+      }
+
+      if(allgot){
+         for (int i = 0; i < argcnt; ++i) {
+            ret += inside_type_name[i] + (i < (argcnt - 1) ? "_" : "");
+         }
+         ret += depth > 0 ? "_E" : "";
+         gottype = true;
+      }
+   }
+
+   // return combined typename, only be used only explicit nested type which has  <<>> or more
+   std::string translate_explicit_nested_type(const clang::QualType& type, int depth = 0){
+      std::string ret =  depth > 0 ? "B_" : "";
+      // one layer cdt string can be made from this layer container name and low layer type names, no need low layer ctd type string
+      bool gottype = false;
+      auto pt = llvm::dyn_cast<clang::ElaboratedType>(type.getTypePtr());
+      if(auto tst = llvm::dyn_cast<clang::TemplateSpecializationType>(pt ? pt->desugar().getTypePtr() : type.getTypePtr())){
+         if(auto rt = llvm::dyn_cast<clang::RecordType>(tst->desugar())){
+            if(auto * decl = rt->getDecl()){
+               std::string tname = decl->getName().str();
+               if(tname == "vector" || tname == "set" || tname == "deque" || tname == "list" || tname == "optional") {
+                  translate_explicit_nested_linear_or_optional(type, depth, ret, tname, gottype);
+               } else if (tname == "map" || tname == "pair") {
+                  translate_explicit_nested_map_or_pair(type, depth, ret, tname, gottype);
+               } else if (tname == "tuple")  {
+                  int argcnt = tst->getNumArgs();
+                  translate_explicit_nested_tuple(type, depth, argcnt, ret, tname, gottype);
+               } else if (tname == "array")  {
+                  translate_explicit_nested_array(type, depth, ret, tname, gottype);
+               } else if (tname == "variant") {
+                  int argcnt = tst->getNumArgs();
+                  translate_explicit_nested_variant(type, depth, argcnt, ret, tname, gottype);
+               }
+            }
+         }
+      }
+      if(!gottype) {
+         std::string errstring = "add_explicit_nested_type failed to fetch type from ";
+         errstring += type.getAsString();
+         CDT_INTERNAL_ERROR(errstring);
+         return "";
+      }
+      return ret;
+   }
+
    inline std::string translate_type( const clang::QualType& type ) {
-      if ( is_template_specialization( type, {"ignore"} ) )
+      if(is_explicit_nested(type)){
+         return translate_explicit_nested_type(type.getNonReferenceType());
+      }
+      else if ( is_template_specialization( type, {"ignore"} ) )
          return get_template_argument_as_string( type );
       else if ( is_template_specialization( type, {"binary_extension"} ) ) {
          auto t = get_template_argument_as_string( type );
@@ -515,9 +668,13 @@ struct generation_utils {
             return t+"[]";
          }
       }
-      else if (is_tuple(type)) {
-         return translate_type(get_nested_type(type));
-      }
+      //The following else if (is_tuple(type)) block is removed, because it causes eosio-cpp compilation
+      //failure on any action that has std::tuple<Ts...> parameter, also the type eosio::non_unique this block
+      //was supposed to handle is obsolete now.
+      //
+      //else if (is_tuple(type)) {
+      //   return translate_type(get_nested_type(type));
+      //}
       else if ( is_template_specialization( type, {"optional"} ) )
          return get_template_argument_as_string( type )+"?";
       else if ( is_template_specialization( type, {"map"} )) {
@@ -540,6 +697,20 @@ struct generation_utils {
                ret += "_";
          }
          return replace_in_name(ret);
+      }
+      else if ( is_template_specialization( type, {"array"} )) {
+         std::string orig = type.getAsString();
+         std:: string ret = "";
+         ret += get_template_argument_as_string( type, 0 );
+         ret = replace_in_name(ret);
+         ret += '[';
+         auto pos1 = orig.find_last_of(',');
+         auto pos2 = orig.find_last_of('>');
+         std::string digits = orig.substr(pos1 + 1, pos2 - pos1 - 1);
+         digits.erase(std::remove(digits.begin(), digits.end(), ' '), digits.end());
+         ret += digits;
+         ret += ']';
+         return ret;
       }
       else if ( is_template_specialization( type, {} )) {
          auto pt = llvm::dyn_cast<clang::ElaboratedType>(type.getTypePtr());
@@ -636,6 +807,44 @@ struct generation_utils {
       return get_base_type_name(t).compare(get_type_alias_string(t)) != 0;
    }
 
+   inline bool is_primitive_eventually(const clang::QualType& type ){
+      if (is_template_specialization( type, {"map", "pair","tuple", "array", "variant", "optional"} )) {
+         return false;
+      } else if (is_template_specialization( type, {"vector", "set","deque", "list"} )) {
+         auto t = get_template_argument_as_string( type );
+         if ( t=="int8" || t=="uint8" ) {
+            // vector<int8>, vector<uint8>, set<int8>, ...  will be converted to "bytes", so they are primitive
+            return true;
+         } else {
+            return false;
+         }
+      } else {
+         return true;
+      }
+   }
+
+   inline bool is_explicit_nested(const clang::QualType& t ){
+      std::string tstr = t.getAsString();
+      if(tstr.find("decay_t") != std::string::npos || tstr.find("decltype") != std::string::npos || tstr.find("ignore") != std::string::npos ||
+         tstr.find("invoke") != std::string::npos || tstr.find("index") != std::string::npos || tstr.find("declval") != std::string::npos ) return false;
+      if(std::count (tstr.begin(), tstr.end(), '<') < 2) return false;
+
+      if (is_template_specialization( t, {"vector", "set", "deque", "list", "map", "pair","tuple", "array","variant", "optional"} )) {
+         auto pt = llvm::dyn_cast<clang::ElaboratedType>(t.getTypePtr());
+         auto tst = llvm::dyn_cast<clang::TemplateSpecializationType>(pt ? pt->desugar().getTypePtr() : t.getTypePtr());
+         for(int i = 0; i < tst->getNumArgs(); ++i){
+            // a type is nested only when one of the next level template arguments is eventually not primitive
+            if (!is_primitive_eventually( std::get<clang::QualType>(get_template_argument(t, i)) )) return true;
+         }
+      }
+      return false;
+   }
+
+   inline bool is_explicit_container(const clang::QualType& t ){
+      std::string tstr = t.getAsString();
+      return std::count (tstr.begin(), tstr.end(), '<') == 1;
+   }
+
    inline bool is_tuple(const clang::QualType& t) {
       constexpr std::string_view test_str = "tuple<";
       return t.getAsString().substr(0, test_str.size()) == test_str;
@@ -653,38 +862,6 @@ struct generation_utils {
       __builtin_unreachable();
    }
 
-   inline bool is_kv_map(const clang::CXXRecordDecl* decl) {
-      return decl->getQualifiedNameAsString().find("eosio::kv::map<") != std::string::npos;
-   }
-
-   // TODO replace this body after this release to reflect the new table type
-   inline bool is_kv_table(const clang::CXXRecordDecl* decl) {
-      for (const auto& base : decl->bases()) {
-         auto type = base.getType();
-         if (type.getAsString().find("eosio::kv::table<") != std::string::npos) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
-   inline bool is_kv_internal(const clang::CXXRecordDecl* decl) {
-      const std::set<std::string> internal_types {
-         "table",
-         "table_base",
-         "index",
-         "index_base"
-      };
-
-      const auto fqn = decl->getQualifiedNameAsString();
-
-      const auto in_kv_namespace = fqn.find("eosio::kv") != std::string::npos;
-      const bool is_internal = internal_types.count(decl->getNameAsString());
-
-      return in_kv_namespace && is_internal;
-   }
-
    inline bool is_write_host_func( const clang::FunctionDecl *func_decl ) {
       static const std::set<std::string> write_host_funcs =
       {
@@ -695,7 +872,6 @@ struct generation_utils {
          "set_proposed_producers_ex",
          "set_blockchain_parameters_packed",
          "set_parameters_packed",
-         "set_kv_parameters_packed",
          "set_privileged",
          "db_store_i64",
          "db_update_i64",
@@ -715,8 +891,6 @@ struct generation_utils {
          "db_idx_long_double_store",
          "db_idx_long_double_update",
          "db_idx_long_double_remove",
-         "kv_erase",
-         "kv_set",
          "send_deferred",
          "send_inline",
          "send_context_free_inline",

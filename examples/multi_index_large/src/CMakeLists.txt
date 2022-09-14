@@ -1,6 +1,5 @@
 project(multi_index_large)
 
-set(INFRABLOCKCHAIN_WASM_OLD_BEHAVIOR "Off")
 find_package(infrablockchain.cdt)
 
 add_contract( multi_index_large multi_index_large multi_index_large.cpp )

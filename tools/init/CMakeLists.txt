@@ -1,4 +1,4 @@
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/eosio-init.cpp ${CMAKE_BINARY_DIR}/infrablockchain-init.cpp @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cdt-init.cpp ${CMAKE_BINARY_DIR}/infrablockchain-init.cpp @ONLY)
 
 add_tool(infrablockchain-init)
 

@@ -172,7 +172,7 @@ void sha512( const char* data, uint32_t length, struct capi_checksum512* hash );
  *  Hashes `data` using `ripemod160` and stores result in memory pointed to by hash.
  *
  *  @param data - Data you want to hash
- *  @param length - Data length
+ *  @param data_len - Data length
  *  @param hash - Hash pointer
  *
  *  Example:

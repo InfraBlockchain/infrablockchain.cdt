@@ -13,22 +13,10 @@ endif()
 
 project(infrablockchain_cdt)
 
-find_program(SCCACHE_FOUND sccache)
-if (SCCACHE_FOUND)
-   message(STATUS "Using sccache")
-   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE sccache)
-else()
-   find_program(CCACHE_FOUND ccache)
-   if (CCACHE_FOUND)
-      message(STATUS "Using ccache")
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-   endif()
-endif()
-
-set(VERSION_MAJOR 2)
+set(VERSION_MAJOR 3)
 set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
-set(VERSION_SUFFIX rc1)
+#set(VERSION_SUFFIX rc3)
 
 if (VERSION_SUFFIX)
    set(VERSION_FULL "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${VERSION_SUFFIX}")
@@ -50,13 +38,6 @@ endif()
 if(NOT LIBS_BUILD_TYPE)
    set(LIBS_BUILD_TYPE "Release")
 endif()
-
-if ($ENV{CLION_IDE})
-   set(BOOST_ROOT "/usr/local/opt/boost")
-   #    include_directories(
-   #            /usr/local/opt/boost/include
-   #    )
-endif ()
 
 include(modules/ClangExternalProject.txt)
 include(modules/ToolsExternalProject.txt)
@@ -85,8 +66,8 @@ include(modules/LibrariesExternalProject.txt)
 
 include(modules/InstallCDT.cmake)
 
-configure_file(${CMAKE_SOURCE_DIR}/imports/eosio.imports.in ${CMAKE_BINARY_DIR}/eosio.imports COPYONLY)
-install(FILES ${CMAKE_BINARY_DIR}/eosio.imports DESTINATION ${CDT_INSTALL_PREFIX})
+configure_file(${CMAKE_SOURCE_DIR}/imports/cdt.imports.in ${CMAKE_BINARY_DIR}/cdt.imports COPYONLY)
+install(FILES ${CMAKE_BINARY_DIR}/cdt.imports DESTINATION ${CDT_INSTALL_PREFIX})
 
 configure_file(${CMAKE_SOURCE_DIR}/scripts/ricardeos/ricardeos.py ${CMAKE_BINARY_DIR}/scripts/ricardeos.py COPYONLY)
 install(FILES ${CMAKE_BINARY_DIR}/scripts/ricardeos.py DESTINATION ${CDT_INSTALL_PREFIX}/scripts)
@@ -104,7 +85,7 @@ configure_file(${CMAKE_SOURCE_DIR}/scripts/generate_rpm.sh ${CMAKE_BINARY_DIR}/p
 configure_file(${CMAKE_SOURCE_DIR}/scripts/generate_tarball.sh ${CMAKE_BINARY_DIR}/packages/generate_tarball.sh COPYONLY)
 
 # add licenses
-configure_file(${CMAKE_SOURCE_DIR}/eosio_llvm/LICENSE.TXT ${CMAKE_BINARY_DIR}/licenses/llvm.license COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/cdt-llvm/LICENSE.TXT ${CMAKE_BINARY_DIR}/licenses/llvm.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/libraries/boost/boost.license ${CMAKE_BINARY_DIR}/licenses/boost.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/libraries/meta_refl/LICENSE ${CMAKE_BINARY_DIR}/licenses/meta_refl.license COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/tools/external/wabt/LICENSE ${CMAKE_BINARY_DIR}/licenses/wabt.license COPYONLY)
